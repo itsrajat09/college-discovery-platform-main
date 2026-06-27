@@ -24,7 +24,7 @@ export default function LoginPage() {
     const data = await res.json();
     setLoading(false);
     if (data.error) { setError(data.error); return; }
-    loginUser(data.user);
+    loginUser(data.user, data.token);
     router.push("/");
   }
 

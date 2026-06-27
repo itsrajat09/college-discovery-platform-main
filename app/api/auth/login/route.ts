@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,7 +17,16 @@ export async function POST(req: NextRequest) {
     if (!valid)
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
 
-    return NextResponse.json({ user: { id: user.id, name: user.name, email: user.email } });
+    const token = jwt.sign(
+      { id: user.id, email: user.email, name: user.name },
+      process.env.JWT_SECRET!,
+      { expiresIn: "7d" }
+    );
+
+    return NextResponse.json({
+      token,
+      user: { id: user.id, name: user.name, email: user.email }
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

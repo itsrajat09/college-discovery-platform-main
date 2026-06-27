@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 export default async function Home() {
   const allColleges = await prisma.college.findMany({ orderBy: { rating: "desc" } });
   const featured = allColleges.slice(0, 3);
-  const topRated = allColleges.slice(0, 3);
+const topRated = allColleges.slice(3, 6);
 
   return (
     <main style={{ minHeight: "100vh", background: "#f0f4ff", fontFamily: "system-ui, sans-serif" }}>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export async function POST(req: NextRequest) {
   const { name, email, password } = await req.json();
@@ -16,5 +17,15 @@ export async function POST(req: NextRequest) {
     data: { name, email, password: hashed },
   });
 
-  return NextResponse.json({ user: { id: user.id, name: user.name, email: user.email } });
+  // Token banao signup pe bhi
+  const token = jwt.sign(
+    { id: user.id, email: user.email, name: user.name },
+    process.env.JWT_SECRET!,
+    { expiresIn: "7d" }
+  );
+
+  return NextResponse.json({
+    token,
+    user: { id: user.id, name: user.name, email: user.email }
+  });
 }

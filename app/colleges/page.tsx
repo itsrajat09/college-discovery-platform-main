@@ -38,7 +38,11 @@ function CollegesContent() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  useEffect(() => { fetchSavedIds().then(setSaved); }, []);
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+  fetchSavedIds().then(setSaved);
+}, []);
 
   const fetchColleges = useCallback(async () => {
     setLoading(true);

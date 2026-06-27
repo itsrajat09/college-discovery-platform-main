@@ -17,9 +17,9 @@ export default function CollegeCard({ college, index, isSaved = false }: Props) 
 async function handleSave(e: React.MouseEvent) {
   e.preventDefault();
   if (!getUser()) { router.push("/login"); return; }
-  setSaved(!saved); // pehle UI turant update karo
+  setSaved(!saved);
   const newState = await toggleSavedDB(college.id, saved);
-  setSaved(newState); // DB response se confirm karo
+  setSaved(newState);
 }
 
   return (

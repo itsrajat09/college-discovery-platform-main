@@ -19,10 +19,11 @@ export default function SavedPage() {
       return;
     }
 
-    fetch("/api/saved", { headers: { "x-user-id": user.id } })
+   const token = localStorage.getItem("token");
+fetch("/api/saved", { headers: { "Authorization": `Bearer ${token}` } })
       .then((r) => r.json())
       .then((data) => {
-        setSavedColleges(data);
+  setSavedColleges(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch(() => setLoading(false));

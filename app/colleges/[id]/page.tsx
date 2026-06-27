@@ -138,8 +138,10 @@ export default function CollegeDetailPage() {
               <p className="text-green-600 text-sm">Average Package</p>
             </div>
             <div className="bg-blue-50 rounded-xl p-4">
-              <p className="text-blue-700 font-bold text-xl">95%+</p>
-              <p className="text-blue-600 text-sm">Placement Rate</p>
+             <p className="text-blue-700 font-bold text-xl">
+               {college.rating >= 4.5 ? "95%+" : college.rating >= 4.0 ? "85%+" : "75%+"}
+               </p>
+               <p className="text-blue-600 text-sm">Placement Rate</p>
             </div>
           </div>
           <p className="text-gray-500 text-sm mt-4">

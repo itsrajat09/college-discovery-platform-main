@@ -15,21 +15,27 @@ export function getUser(): User | null {
   }
 }
 
-export function loginUser(user: User) {
+export function getToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("token");
+}
+
+export function loginUser(user: User, token: string) {
   localStorage.setItem("user", JSON.stringify(user));
+  localStorage.setItem("token", token);
 }
 
 export function logoutUser() {
   localStorage.removeItem("user");
-  
+  localStorage.removeItem("token");
 }
- 
+
 export async function fetchSavedIds(): Promise<string[]> {
-  const user = getUser();
-  if (!user) return [];
+  const token = getToken();
+  if (!token) return [];
   try {
     const res = await fetch("/api/saved", {
-      headers: { "x-user-id": user.id },
+      headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) return [];
     const colleges = await res.json();
@@ -40,28 +46,37 @@ export async function fetchSavedIds(): Promise<string[]> {
 }
 
 export async function saveCollege(collegeId: string): Promise<boolean> {
-  const user = getUser();
-  if (!user) return false;
+  const token = getToken();
+  if (!token) return false;
   const res = await fetch("/api/saved", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId: user.id, collegeId }),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ collegeId }),
   });
   return res.ok;
 }
 
 export async function unsaveCollege(collegeId: string): Promise<boolean> {
-  const user = getUser();
-  if (!user) return false;
+  const token = getToken();
+  if (!token) return false;
   const res = await fetch("/api/saved", {
     method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId: user.id, collegeId }),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ collegeId }),
   });
   return res.ok;
 }
 
-export async function toggleSavedDB(collegeId: string, currentlySaved: boolean): Promise<boolean> {
+export async function toggleSavedDB(
+  collegeId: string,
+  currentlySaved: boolean
+): Promise<boolean> {
   if (currentlySaved) {
     await unsaveCollege(collegeId);
     return false;
