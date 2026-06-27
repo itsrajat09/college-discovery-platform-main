@@ -144,7 +144,7 @@ export default function ComparePage() {
       <Navbar />
 
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="bg-gradient-to-br from-blue-700 to-blue-500 text-white py-14 px-4 text-center">
+      <section className="bg-gradient-to-br from-blue-900 to-blue-700 text-white py-14 px-4 text-center">
         <span className="inline-block bg-white/20 text-white text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
           Side-by-Side Analysis
         </span>

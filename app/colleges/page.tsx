@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import CollegeCard from "@/components/CollegeCard";
 import SkeletonCard from "@/components/SkeletonCard";
-import { getSaved } from "@/lib/auth";
+import { fetchSavedIds } from "@/lib/auth";
 import type { College } from "@/lib/colleges";
 
 const LOCATIONS = ["All", "Delhi", "Mumbai", "Chennai", "Bangalore", "Pune", "Kolkata", "Pilani, Rajasthan", "Vellore, Tamil Nadu"];
@@ -27,7 +27,7 @@ export default function CollegesPage() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  useEffect(() => { setSaved(getSaved()); }, []);
+  useEffect(() => { fetchSavedIds().then(setSaved); }, []);
 
   const fetchColleges = useCallback(async () => {
     setLoading(true);

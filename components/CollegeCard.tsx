@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { toggleSaved, getUser } from "@/lib/auth";
+import { toggleSavedDB, getUser } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import type { College } from "@/lib/colleges";
 
@@ -14,12 +14,13 @@ export default function CollegeCard({ college, index, isSaved = false }: Props) 
   const [hovered, setHovered] = useState(false);
   const router = useRouter();
 
-  function handleSave(e: React.MouseEvent) {
-    e.preventDefault();
-    if (!getUser()) { router.push("/login"); return; }
-    const updated = toggleSaved(college.id);
-    setSaved(updated.includes(college.id));
-  }
+async function handleSave(e: React.MouseEvent) {
+  e.preventDefault();
+  if (!getUser()) { router.push("/login"); return; }
+  setSaved(!saved); // pehle UI turant update karo
+  const newState = await toggleSavedDB(college.id, saved);
+  setSaved(newState); // DB response se confirm karo
+}
 
   return (
     <motion.div

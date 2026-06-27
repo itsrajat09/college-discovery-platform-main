@@ -21,28 +21,52 @@ export function loginUser(user: User) {
 
 export function logoutUser() {
   localStorage.removeItem("user");
-  localStorage.removeItem("saved");
+  
 }
-
-export function getSaved(): string[] {
-  if (typeof window === "undefined") return [];
-  const raw = localStorage.getItem("saved");
-  if (!raw) return [];
+ 
+export async function fetchSavedIds(): Promise<string[]> {
+  const user = getUser();
+  if (!user) return [];
   try {
-    return JSON.parse(raw) as string[];
+    const res = await fetch("/api/saved", {
+      headers: { "x-user-id": user.id },
+    });
+    if (!res.ok) return [];
+    const colleges = await res.json();
+    return (colleges as { id: string }[]).map((c) => c.id);
   } catch {
     return [];
   }
 }
 
-export function toggleSaved(collegeId: string): string[] {
-  const saved = getSaved();
-  const idx = saved.indexOf(collegeId);
-  if (idx === -1) {
-    saved.push(collegeId);
+export async function saveCollege(collegeId: string): Promise<boolean> {
+  const user = getUser();
+  if (!user) return false;
+  const res = await fetch("/api/saved", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId: user.id, collegeId }),
+  });
+  return res.ok;
+}
+
+export async function unsaveCollege(collegeId: string): Promise<boolean> {
+  const user = getUser();
+  if (!user) return false;
+  const res = await fetch("/api/saved", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId: user.id, collegeId }),
+  });
+  return res.ok;
+}
+
+export async function toggleSavedDB(collegeId: string, currentlySaved: boolean): Promise<boolean> {
+  if (currentlySaved) {
+    await unsaveCollege(collegeId);
+    return false;
   } else {
-    saved.splice(idx, 1);
+    await saveCollege(collegeId);
+    return true;
   }
-  localStorage.setItem("saved", JSON.stringify(saved));
-  return saved;
 }

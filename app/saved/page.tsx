@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { getUser, getSaved, toggleSaved } from "@/lib/auth";
+import { getUser, unsaveCollege } from "@/lib/auth";
 import type { College } from "@/lib/colleges";
 import Link from "next/link";
 
@@ -19,29 +19,17 @@ export default function SavedPage() {
       return;
     }
 
-    const savedIds = getSaved();
-
-    if (savedIds.length === 0) {
-      setLoading(false);
-      return;
-    }
-
-    // Fetch each saved college from the DB API
-    Promise.all(
-      savedIds.map((id) =>
-        fetch(`/api/colleges/${id}`)
-          .then((r) => r.json())
-          .catch(() => null)
-      )
-    ).then((results) => {
-      const valid = results.filter((c) => c && !c.error) as College[];
-      setSavedColleges(valid);
-      setLoading(false);
-    });
+    fetch("/api/saved", { headers: { "x-user-id": user.id } })
+      .then((r) => r.json())
+      .then((data) => {
+        setSavedColleges(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, [router]);
 
-  function handleRemove(id: string) {
-    toggleSaved(id);
+  async function handleRemove(id: string) {
+    await unsaveCollege(id);
     setSavedColleges((prev) => prev.filter((c) => c.id !== id));
   }
 
