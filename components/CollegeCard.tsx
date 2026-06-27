@@ -7,78 +7,71 @@ import { toggleSaved, getUser } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import type { College } from "@/lib/colleges";
 
-type Props = {
-  college: College;
-  index: number;
-  isSaved?: boolean;
-};
+type Props = { college: College; index: number; isSaved?: boolean; };
 
 export default function CollegeCard({ college, index, isSaved = false }: Props) {
   const [saved, setSaved] = useState(isSaved);
+  const [hovered, setHovered] = useState(false);
   const router = useRouter();
 
   function handleSave(e: React.MouseEvent) {
     e.preventDefault();
-    const user = getUser();
-    if (!user) {
-      router.push("/login");
-      return;
-    }
+    if (!getUser()) { router.push("/login"); return; }
     const updated = toggleSaved(college.id);
     setSaved(updated.includes(college.id));
   }
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-      className="bg-white rounded-2xl shadow-md border hover:shadow-xl transition-shadow"
+      transition={{ duration: 0.35, delay: index * 0.06 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: "#fff", borderRadius: "20px",
+        border: hovered ? "1px solid rgba(59,130,246,0.4)" : "1px solid rgba(59,130,246,0.1)",
+        boxShadow: hovered ? "0 16px 40px rgba(30,77,183,0.18)" : "0 4px 20px rgba(30,77,183,0.08)",
+        transform: hovered ? "translateY(-4px)" : "translateY(0)",
+        transition: "all 0.25s ease", overflow: "hidden", display: "flex", flexDirection: "column",
+      }}
     >
-      <Link href={`/colleges/${college.id}`} className="block p-5">
-        <div className="flex justify-between items-start">
-          <div>
-            <h2 className="text-xl font-bold text-blue-700">{college.name}</h2>
-            <p className="text-gray-500 text-sm mt-1">📍 {college.location}</p>
+      <div style={{ height: "4px", background: "linear-gradient(90deg, #3b82f6, #6366f1)" }} />
+
+      <Link href={`/colleges/${college.id}`} style={{ textDecoration: "none", padding: "20px 20px 16px", flex: 1 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+          <div style={{ flex: 1, marginRight: "10px" }}>
+            <h2 style={{ fontSize: "16px", fontWeight: 800, color: "#1e3a8a", margin: "0 0 5px", lineHeight: 1.3 }}>{college.name}</h2>
+            <p style={{ color: "#94a3b8", fontSize: "13px", margin: 0 }}>📍 {college.location}</p>
           </div>
-          <span className="bg-blue-50 text-blue-700 text-xs font-semibold px-2 py-1 rounded-full">
+          <span style={{ background: college.type === "Government" ? "#dbeafe" : "#f3e8ff", color: college.type === "Government" ? "#1d4ed8" : "#7c3aed", fontSize: "11px", fontWeight: 700, padding: "4px 10px", borderRadius: "100px", whiteSpace: "nowrap" }}>
             {college.type}
           </span>
         </div>
-
-        <p className="text-gray-600 text-sm mt-3 line-clamp-2">{college.description}</p>
-
-        <div className="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
-          <div className="bg-gray-50 rounded-lg p-2">
-            <p className="font-semibold text-gray-800">₹{(college.fees / 100000).toFixed(1)}L</p>
-            <p className="text-gray-400 text-xs">Fees/yr</p>
+        <p style={{ color: "#64748b", fontSize: "13px", lineHeight: 1.5, margin: "0 0 16px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+          {college.description}
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
+          <div style={{ background: "#f8fafc", borderRadius: "12px", padding: "10px 8px", textAlign: "center", border: "1px solid #e2e8f0" }}>
+            <p style={{ fontSize: "14px", fontWeight: 800, color: "#0a1628", margin: "0 0 2px" }}>₹{(college.fees / 100000).toFixed(1)}L</p>
+            <p style={{ fontSize: "11px", color: "#94a3b8", margin: 0 }}>Fees/yr</p>
           </div>
-          <div className="bg-yellow-50 rounded-lg p-2">
-            <p className="font-semibold text-yellow-700">⭐ {college.rating}</p>
-            <p className="text-gray-400 text-xs">Rating</p>
+          <div style={{ background: "#fefce8", borderRadius: "12px", padding: "10px 8px", textAlign: "center", border: "1px solid #fef08a" }}>
+            <p style={{ fontSize: "14px", fontWeight: 800, color: "#854d0e", margin: "0 0 2px" }}>⭐ {college.rating}</p>
+            <p style={{ fontSize: "11px", color: "#94a3b8", margin: 0 }}>Rating</p>
           </div>
-          <div className="bg-green-50 rounded-lg p-2">
-            <p className="font-semibold text-green-700">{college.placements}</p>
-            <p className="text-gray-400 text-xs">Avg. CTC</p>
+          <div style={{ background: "#f0fdf4", borderRadius: "12px", padding: "10px 8px", textAlign: "center", border: "1px solid #bbf7d0" }}>
+            <p style={{ fontSize: "14px", fontWeight: 800, color: "#166534", margin: "0 0 2px" }}>{college.placements}</p>
+            <p style={{ fontSize: "11px", color: "#94a3b8", margin: 0 }}>Avg. CTC</p>
           </div>
         </div>
       </Link>
 
-      <div className="px-5 pb-4 flex gap-2">
-        <Link
-          href={`/colleges/${college.id}`}
-          className="flex-1 text-center bg-blue-600 text-white py-2 rounded-xl text-sm hover:bg-blue-700 transition"
-        >
+      <div style={{ padding: "12px 20px 20px", display: "flex", gap: "10px" }}>
+        <Link href={`/colleges/${college.id}`} style={{ flex: 1, textAlign: "center", textDecoration: "none", background: "linear-gradient(135deg, #1e4db7, #3b82f6)", color: "#fff", padding: "11px", borderRadius: "12px", fontSize: "13px", fontWeight: 700, boxShadow: "0 4px 12px rgba(59,130,246,0.3)" }}>
           View Details →
         </Link>
-        <button
-          onClick={handleSave}
-          className={`px-4 py-2 rounded-xl text-sm border transition ${
-            saved
-              ? "bg-red-50 text-red-500 border-red-200 hover:bg-red-100"
-              : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"
-          }`}
-        >
+        <button onClick={handleSave} style={{ width: "44px", height: "44px", borderRadius: "12px", border: "none", cursor: "pointer", fontSize: "18px", display: "flex", alignItems: "center", justifyContent: "center", background: saved ? "#fee2e2" : "#f1f5f9", color: saved ? "#ef4444" : "#94a3b8", transition: "all 0.2s", boxShadow: saved ? "0 2px 8px rgba(239,68,68,0.2)" : "none" }}>
           {saved ? "♥" : "♡"}
         </button>
       </div>

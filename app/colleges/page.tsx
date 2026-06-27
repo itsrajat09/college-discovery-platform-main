@@ -22,19 +22,12 @@ export default function CollegesPage() {
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState<string[]>([]);
 
-  // Debounce search
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search);
-      setPage(1);
-    }, 400);
+    const timer = setTimeout(() => { setDebouncedSearch(search); setPage(1); }, 400);
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Load saved
-  useEffect(() => {
-    setSaved(getSaved());
-  }, []);
+  useEffect(() => { setSaved(getSaved()); }, []);
 
   const fetchColleges = useCallback(async () => {
     setLoading(true);
@@ -44,7 +37,6 @@ export default function CollegesPage() {
     if (maxFees < 9999999) params.set("maxFees", String(maxFees));
     if (minRating > 0) params.set("rating", String(minRating));
     params.set("page", String(page));
-
     const res = await fetch(`/api/colleges?${params.toString()}`);
     const data = await res.json();
     setColleges(data.colleges);
@@ -53,141 +45,106 @@ export default function CollegesPage() {
     setLoading(false);
   }, [debouncedSearch, location, maxFees, minRating, page]);
 
-  useEffect(() => {
-    fetchColleges();
-  }, [fetchColleges]);
+  useEffect(() => { fetchColleges(); }, [fetchColleges]);
+
+  const clearFilters = () => { setSearch(""); setLocation(""); setMaxFees(9999999); setMinRating(0); setPage(1); };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div style={{ minHeight: "100vh", background: "#f0f4ff", fontFamily: "system-ui, sans-serif" }}>
       <Navbar />
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-extrabold text-gray-800 mb-2">🎓 Explore Colleges</h1>
-        <p className="text-gray-500 mb-6">{total} colleges found</p>
+      <div style={{ background: "linear-gradient(135deg, #0a1628 0%, #0d2060 50%, #1e4db7 100%)", padding: "48px 24px 64px", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: "-60px", right: "-60px", width: "300px", height: "300px", borderRadius: "50%", background: "rgba(99,102,241,0.15)", filter: "blur(60px)", pointerEvents: "none" }} />
+        <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+          <p style={{ color: "#93c5fd", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 10px" }}>Database • Live Results</p>
+          <h1 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 900, color: "#fff", margin: "0 0 8px", letterSpacing: "-0.02em" }}>🎓 Explore Colleges</h1>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "15px", margin: 0 }}>
+            {loading ? "Loading..." : <><span style={{ color: "#60a5fa", fontWeight: 700 }}>{total}</span> colleges found</>}
+          </p>
+        </div>
+      </div>
 
-        {/* Search */}
-        <div className="relative mb-6">
-          <input
-            type="text"
-            placeholder="Search colleges by name or city..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-4 pl-12 rounded-xl border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-          />
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔍</span>
+      <div style={{ maxWidth: "1100px", margin: "-32px auto 0", padding: "0 24px 64px", position: "relative", zIndex: 10 }}>
+
+        <div style={{ background: "#fff", borderRadius: "16px", display: "flex", alignItems: "center", gap: "12px", padding: "6px 6px 6px 20px", boxShadow: "0 8px 32px rgba(30,77,183,0.15)", border: "1px solid rgba(59,130,246,0.15)", marginBottom: "16px" }}>
+          <span style={{ fontSize: "20px", color: "#94a3b8" }}>🔍</span>
+          <input type="text" placeholder="Search colleges by name or city..." value={search} onChange={(e) => setSearch(e.target.value)}
+            style={{ flex: 1, border: "none", outline: "none", fontSize: "15px", color: "#0a1628", background: "transparent" }} />
+          {search && <button onClick={() => setSearch("")} style={{ background: "#f1f5f9", border: "none", borderRadius: "8px", padding: "8px 14px", color: "#64748b", cursor: "pointer", fontSize: "13px" }}>Clear</button>}
+          <button style={{ background: "linear-gradient(135deg, #3b82f6, #6366f1)", color: "#fff", border: "none", borderRadius: "12px", padding: "12px 24px", fontWeight: 700, fontSize: "14px", cursor: "pointer" }}>Search</button>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-2xl shadow-sm border p-5 mb-8 grid md:grid-cols-3 gap-5">
+        <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", boxShadow: "0 4px 20px rgba(30,77,183,0.08)", border: "1px solid rgba(59,130,246,0.1)", marginBottom: "24px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "24px" }}>
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-2">📍 Location</label>
-            <select
-              value={location}
-              onChange={(e) => { setLocation(e.target.value); setPage(1); }}
-              className="w-full border rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              {LOCATIONS.map((l) => (
-                <option key={l} value={l === "All" ? "" : l}>{l}</option>
-              ))}
+            <label style={{ display: "block", fontSize: "12px", fontWeight: 700, color: "#64748b", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "10px" }}>📍 Location</label>
+            <select value={location} onChange={(e) => { setLocation(e.target.value); setPage(1); }}
+              style={{ width: "100%", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "10px 14px", fontSize: "14px", color: "#0a1628", background: "#f8fafc", outline: "none", cursor: "pointer" }}>
+              {LOCATIONS.map((l) => <option key={l} value={l === "All" ? "" : l}>{l}</option>)}
             </select>
           </div>
-
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-2">
-              💰 Max Fees: {maxFees === 9999999 ? "Any" : `₹${(maxFees / 100000).toFixed(0)}L`}
+            <label style={{ display: "block", fontSize: "12px", fontWeight: 700, color: "#64748b", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "10px" }}>
+              💰 Max Fees: <span style={{ color: "#3b82f6" }}>{maxFees === 9999999 ? "Any" : `₹${(maxFees / 100000).toFixed(0)}L`}</span>
             </label>
-            <input
-              type="range"
-              min={50000}
-              max={600000}
-              step={50000}
-              value={maxFees === 9999999 ? 600000 : maxFees}
+            <input type="range" min={50000} max={600000} step={50000} value={maxFees === 9999999 ? 600000 : maxFees}
               onChange={(e) => { setMaxFees(Number(e.target.value) >= 600000 ? 9999999 : Number(e.target.value)); setPage(1); }}
-              className="w-full accent-blue-600"
-            />
-            <div className="flex justify-between text-xs text-gray-400 mt-1">
+              style={{ width: "100%", accentColor: "#3b82f6" }} />
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#94a3b8", marginTop: "4px" }}>
               <span>₹50K</span><span>Any</span>
             </div>
           </div>
-
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-2">⭐ Min Rating: {minRating || "Any"}</label>
-            <div className="flex gap-2 flex-wrap">
+            <label style={{ display: "block", fontSize: "12px", fontWeight: 700, color: "#64748b", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "10px" }}>
+              ⭐ Min Rating: <span style={{ color: "#3b82f6" }}>{minRating || "Any"}</span>
+            </label>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               {[0, 4.0, 4.3, 4.5, 4.7].map((r) => (
-                <button
-                  key={r}
-                  onClick={() => { setMinRating(r); setPage(1); }}
-                  className={`px-3 py-1.5 rounded-lg text-sm border transition ${
-                    minRating === r
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-white text-gray-600 hover:bg-gray-50"
-                  }`}
-                >
-                  {r === 0 ? "Any" : `${r}+`}
-                </button>
+                <button key={r} onClick={() => { setMinRating(r); setPage(1); }} style={{
+                  padding: "7px 14px", borderRadius: "10px", fontSize: "13px", fontWeight: 600, cursor: "pointer",
+                  border: minRating === r ? "none" : "1px solid #e2e8f0",
+                  background: minRating === r ? "linear-gradient(135deg, #3b82f6, #6366f1)" : "#f8fafc",
+                  color: minRating === r ? "#fff" : "#64748b",
+                  boxShadow: minRating === r ? "0 4px 12px rgba(59,130,246,0.3)" : "none"
+                }}>{r === 0 ? "Any" : `${r}+`}</button>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Results */}
+        {(search || location || maxFees < 9999999 || minRating > 0) && (
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
+            <span style={{ color: "#64748b", fontSize: "13px" }}>Active filters:</span>
+            {search && <span style={{ background: "#dbeafe", color: "#1d4ed8", padding: "4px 12px", borderRadius: "100px", fontSize: "12px", fontWeight: 600 }}>"{search}"</span>}
+            {location && <span style={{ background: "#dbeafe", color: "#1d4ed8", padding: "4px 12px", borderRadius: "100px", fontSize: "12px", fontWeight: 600 }}>📍 {location}</span>}
+            {maxFees < 9999999 && <span style={{ background: "#dbeafe", color: "#1d4ed8", padding: "4px 12px", borderRadius: "100px", fontSize: "12px", fontWeight: 600 }}>💰 ≤₹{(maxFees / 100000).toFixed(0)}L</span>}
+            {minRating > 0 && <span style={{ background: "#dbeafe", color: "#1d4ed8", padding: "4px 12px", borderRadius: "100px", fontSize: "12px", fontWeight: 600 }}>⭐ {minRating}+</span>}
+            <button onClick={clearFilters} style={{ color: "#ef4444", fontSize: "12px", fontWeight: 600, background: "#fee2e2", border: "none", borderRadius: "100px", padding: "4px 12px", cursor: "pointer" }}>✕ Clear all</button>
+          </div>
+        )}
+
         {loading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px" }}>
             {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : colleges.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-5xl mb-4">🔍</p>
-            <p className="text-xl font-semibold text-gray-700">No Colleges Found</p>
-            <p className="text-gray-500 mt-2">Try a different search term or adjust your filters.</p>
-            <button
-              onClick={() => { setSearch(""); setLocation(""); setMaxFees(9999999); setMinRating(0); setPage(1); }}
-              className="mt-6 bg-blue-600 text-white px-6 py-2.5 rounded-xl hover:bg-blue-700 transition"
-            >
-              Clear Filters
-            </button>
+          <div style={{ textAlign: "center", padding: "80px 24px", background: "#fff", borderRadius: "24px" }}>
+            <p style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</p>
+            <p style={{ fontSize: "20px", fontWeight: 700, color: "#0a1628", marginBottom: "8px" }}>No Colleges Found</p>
+            <p style={{ color: "#94a3b8", fontSize: "14px", marginBottom: "24px" }}>Try a different search term or adjust your filters.</p>
+            <button onClick={clearFilters} style={{ background: "linear-gradient(135deg, #3b82f6, #6366f1)", color: "#fff", border: "none", borderRadius: "12px", padding: "12px 28px", fontWeight: 700, fontSize: "14px", cursor: "pointer" }}>Clear Filters</button>
           </div>
         ) : (
           <>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {colleges.map((college, i) => (
-                <CollegeCard
-                  key={college.id}
-                  college={college}
-                  index={i}
-                  isSaved={saved.includes(college.id)}
-                />
-              ))}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px" }}>
+              {colleges.map((college, i) => <CollegeCard key={college.id} college={college} index={i} isSaved={saved.includes(college.id)} />)}
             </div>
-
-            {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center gap-2 mt-10">
-                <button
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => p - 1)}
-                  className="px-4 py-2 rounded-lg border disabled:opacity-40 hover:bg-gray-100 transition"
-                >
-                  ← Prev
-                </button>
+              <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "40px", alignItems: "center" }}>
+                <button disabled={page === 1} onClick={() => setPage((p) => p - 1)} style={{ padding: "10px 20px", borderRadius: "10px", border: "1px solid #e2e8f0", background: "#fff", color: "#64748b", cursor: page === 1 ? "not-allowed" : "pointer", opacity: page === 1 ? 0.4 : 1, fontWeight: 600, fontSize: "14px" }}>← Prev</button>
                 {Array.from({ length: totalPages }).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setPage(i + 1)}
-                    className={`w-10 h-10 rounded-lg border text-sm font-semibold transition ${
-                      page === i + 1 ? "bg-blue-600 text-white border-blue-600" : "hover:bg-gray-100"
-                    }`}
-                  >
-                    {i + 1}
-                  </button>
+                  <button key={i} onClick={() => setPage(i + 1)} style={{ width: "40px", height: "40px", borderRadius: "10px", border: page === i + 1 ? "none" : "1px solid #e2e8f0", background: page === i + 1 ? "linear-gradient(135deg, #3b82f6, #6366f1)" : "#fff", color: page === i + 1 ? "#fff" : "#64748b", fontWeight: 700, fontSize: "14px", cursor: "pointer", boxShadow: page === i + 1 ? "0 4px 12px rgba(59,130,246,0.3)" : "none" }}>{i + 1}</button>
                 ))}
-                <button
-                  disabled={page === totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  className="px-4 py-2 rounded-lg border disabled:opacity-40 hover:bg-gray-100 transition"
-                >
-                  Next →
-                </button>
+                <button disabled={page === totalPages} onClick={() => setPage((p) => p + 1)} style={{ padding: "10px 20px", borderRadius: "10px", border: "1px solid #e2e8f0", background: "#fff", color: "#64748b", cursor: page === totalPages ? "not-allowed" : "pointer", opacity: page === totalPages ? 0.4 : 1, fontWeight: 600, fontSize: "14px" }}>Next →</button>
               </div>
             )}
           </>

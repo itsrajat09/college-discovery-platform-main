@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { getUser, getSaved, toggleSaved } from "@/lib/auth";
-import { colleges as allColleges } from "@/lib/colleges";
 import type { College } from "@/lib/colleges";
 import Link from "next/link";
 
@@ -19,10 +18,26 @@ export default function SavedPage() {
       router.push("/login");
       return;
     }
+
     const savedIds = getSaved();
-    const filtered = allColleges.filter((c) => savedIds.includes(c.id));
-    setSavedColleges(filtered);
-    setLoading(false);
+
+    if (savedIds.length === 0) {
+      setLoading(false);
+      return;
+    }
+
+    // Fetch each saved college from the DB API
+    Promise.all(
+      savedIds.map((id) =>
+        fetch(`/api/colleges/${id}`)
+          .then((r) => r.json())
+          .catch(() => null)
+      )
+    ).then((results) => {
+      const valid = results.filter((c) => c && !c.error) as College[];
+      setSavedColleges(valid);
+      setLoading(false);
+    });
   }, [router]);
 
   function handleRemove(id: string) {
