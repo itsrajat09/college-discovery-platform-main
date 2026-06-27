@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { toggleSaved, getSaved, getUser } from "@/lib/auth";
+import { toggleSavedDB, fetchSavedIds, getUser } from "@/lib/auth";
 import type { College } from "@/lib/colleges";
 import Link from "next/link";
 
@@ -17,18 +17,19 @@ export default function CollegeDetailPage() {
   useEffect(() => {
     fetch(`/api/colleges/${id}`)
       .then((r) => r.json())
-      .then((data) => {
+      .then(async (data) => {
         setCollege(data);
-        setSaved(getSaved().includes(id));
+        const savedIds = await fetchSavedIds();
+        setSaved(savedIds.includes(id));
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, [id]);
 
-  function handleSave() {
+  async function handleSave() {
     if (!getUser()) { router.push("/login"); return; }
-    const updated = toggleSaved(id);
-    setSaved(updated.includes(id));
+    const newState = await toggleSavedDB(id, saved);
+    setSaved(newState);
   }
 
   if (loading) {
