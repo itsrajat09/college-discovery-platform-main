@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import HomeSearch from "@/components/HomeSearch";
 import { prisma } from "@/lib/prisma";
 
 export default async function Home() {
@@ -13,8 +14,6 @@ export default async function Home() {
 
       <style>{`
         .hero-section { padding: 64px 20px 100px; }
-        .search-bar { max-width: 560px; margin: 0 auto 28px; display: flex; gap: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 8px 8px 8px 16px; }
-        .search-btn { background: linear-gradient(135deg, #3b82f6, #6366f1); color: #fff; font-weight: 700; padding: 11px 20px; border-radius: 10px; text-decoration: none; font-size: 14px; white-space: nowrap; box-shadow: 0 4px 20px rgba(99,102,241,0.4); }
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
         .featured-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
         .toprated-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -23,9 +22,6 @@ export default async function Home() {
         .badge-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
         @media (max-width: 640px) {
           .hero-section { padding: 44px 16px 80px; }
-          .search-bar { flex-wrap: wrap; padding: 10px 12px; border-radius: 14px; }
-          .search-bar input { width: 100%; font-size: 14px; }
-          .search-btn { width: 100%; text-align: center; padding: 12px; border-radius: 10px; font-size: 14px; }
           .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
           .featured-grid { grid-template-columns: 1fr; gap: 14px; }
           .toprated-grid { grid-template-columns: 1fr; gap: 14px; }
@@ -58,12 +54,8 @@ export default async function Home() {
           Discover, compare, and save top colleges across India — all in one place.
         </p>
 
-        <div className="search-bar">
-          <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "18px", display: "flex", alignItems: "center", flexShrink: 0 }}>🔍</span>
-          <input type="text" placeholder="Search colleges by name or city..." readOnly
-            style={{ flex: 1, minWidth: "120px", background: "transparent", border: "none", outline: "none", color: "#fff", fontSize: "15px" }} />
-          <Link href="/colleges" className="search-btn">Search →</Link>
-        </div>
+        {/* Search box — type karke colleges page pe search hogi */}
+        <HomeSearch />
 
         <div className="badge-row">
           {["✅ 25+ Colleges", "✅ Filter by Fees & Rating", "✅ Compare Side by Side"].map((f) => (
