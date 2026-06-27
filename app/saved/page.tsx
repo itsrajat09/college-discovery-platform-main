@@ -39,7 +39,7 @@ export default function SavedPage() {
         <Navbar />
         <div className="max-w-4xl mx-auto px-4 py-12 animate-pulse">
           <div className="h-8 w-48 bg-gray-200 rounded mb-8" />
-          <div className="grid md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {[1, 2, 3, 4].map((i) => <div key={i} className="h-40 bg-gray-200 rounded-2xl" />)}
           </div>
         </div>
@@ -68,15 +68,15 @@ export default function SavedPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {savedColleges.map((college) => (
               <div key={college.id} className="bg-white rounded-2xl shadow border p-5 flex flex-col gap-4">
                 <div>
                   <h2 className="text-xl font-bold text-blue-700">{college.name}</h2>
                   <p className="text-gray-500 text-sm mt-1">📍 {college.location}</p>
                   <div className="mt-3 grid grid-cols-3 gap-2 text-center text-sm">
-                    <div className="bg-gray-50 rounded-lg p-2">
-                      <p className="font-semibold">₹{(college.fees / 100000).toFixed(1)}L</p>
+                    <div className="bg-blue-50 rounded-lg p-2">
+                      <p className="font-semibold text-blue-700">₹{(college.fees / 100000).toFixed(1)}L</p>
                       <p className="text-gray-400 text-xs">Fees/yr</p>
                     </div>
                     <div className="bg-yellow-50 rounded-lg p-2">

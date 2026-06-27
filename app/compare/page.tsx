@@ -253,7 +253,8 @@ export default function ComparePage() {
         )}
 
         {/* ── Comparison Table ──────────────────────────────────── */}
-        <div className="bg-white rounded-2xl shadow border border-gray-100 overflow-hidden mb-6">
+        <div className="overflow-x-auto mb-6">
+        <div className="bg-white rounded-2xl shadow border border-gray-100 overflow-hidden min-w-[560px]">
 
           {/* Header */}
           <div className="grid grid-cols-3 text-sm font-bold text-white">
@@ -353,6 +354,8 @@ export default function ComparePage() {
             </div>
           </div>
         </div>
+
+        </div>{/* end overflow-x-auto */}
 
         {/* ── Verdict ───────────────────────────────────────────── */}
         {overallWinner && (

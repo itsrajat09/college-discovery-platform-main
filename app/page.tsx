@@ -13,13 +13,7 @@ export default async function Home() {
       <Navbar />
 
       {/* HERO */}
-      <section style={{
-        background: "linear-gradient(135deg, #0a1628 0%, #0d2060 40%, #1a3a8f 70%, #1e4db7 100%)",
-        padding: "90px 24px 120px",
-        textAlign: "center",
-        position: "relative",
-        overflow: "hidden",
-      }}>
+      <section style={{ background: "linear-gradient(135deg, #0a1628 0%, #0d2060 40%, #1a3a8f 70%, #1e4db7 100%)", padding: "60px 24px 100px", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: "-60px", left: "-60px", width: "300px", height: "300px", borderRadius: "50%", background: "rgba(59,130,246,0.15)", filter: "blur(60px)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", bottom: "-80px", right: "-40px", width: "350px", height: "350px", borderRadius: "50%", background: "rgba(99,102,241,0.15)", filter: "blur(80px)", pointerEvents: "none" }} />
 
@@ -27,59 +21,59 @@ export default async function Home() {
           🎓 India&apos;s #1 College Discovery Platform
         </div>
 
-        <h1 style={{ fontSize: "clamp(2.4rem, 6vw, 4rem)", fontWeight: 900, color: "#fff", margin: "0 0 20px", lineHeight: 1.1, letterSpacing: "-0.03em" }}>
+        <h1 style={{ fontSize: "clamp(2rem, 6vw, 4rem)", fontWeight: 900, color: "#fff", margin: "0 0 20px", lineHeight: 1.1, letterSpacing: "-0.03em" }}>
           Find Your{" "}
           <span style={{ background: "linear-gradient(90deg, #60a5fa, #818cf8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             Dream College
           </span>
         </h1>
-        <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "18px", maxWidth: "520px", margin: "0 auto 40px", lineHeight: 1.6 }}>
+        <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "clamp(15px, 2vw, 18px)", maxWidth: "520px", margin: "0 auto 40px", lineHeight: 1.6 }}>
           Discover, compare, and save top colleges across India — all in one place.
         </p>
 
         <HomeSearch />
 
-        <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "10px", flexWrap: "wrap" }}>
           {["✅ 25+ Colleges", "✅ Filter by Fees & Rating", "✅ Compare Side by Side"].map((f) => (
-            <span key={f} style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", padding: "6px 16px", borderRadius: "100px", fontSize: "13px" }}>{f}</span>
+            <span key={f} style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", padding: "6px 14px", borderRadius: "100px", fontSize: "12px" }}>{f}</span>
           ))}
         </div>
       </section>
 
       {/* STATS */}
-      <section style={{ maxWidth: "900px", margin: "-44px auto 0", padding: "0 24px", position: "relative", zIndex: 10 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
+      <section style={{ maxWidth: "900px", margin: "-44px auto 0", padding: "0 16px", position: "relative", zIndex: 10 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px" }}>
           {[
             { value: `${allColleges.length}+`, label: "Colleges Listed", icon: "🏫", color: "#3b82f6" },
             { value: "12+", label: "Cities Covered", icon: "🌆", color: "#6366f1" },
             { value: "₹25 LPA", label: "Avg Placements", icon: "💼", color: "#0ea5e9" },
           ].map((s) => (
-            <div key={s.label} style={{ background: "#fff", borderRadius: "20px", padding: "24px", textAlign: "center", boxShadow: "0 8px 32px rgba(30,77,183,0.12)", border: "1px solid rgba(59,130,246,0.1)" }}>
-              <div style={{ fontSize: "28px", marginBottom: "8px" }}>{s.icon}</div>
-              <p style={{ fontSize: "28px", fontWeight: 800, color: s.color, margin: "0 0 4px" }}>{s.value}</p>
-              <p style={{ color: "#64748b", fontSize: "13px", margin: 0 }}>{s.label}</p>
+            <div key={s.label} style={{ background: "#fff", borderRadius: "16px", padding: "16px 12px", textAlign: "center", boxShadow: "0 8px 32px rgba(30,77,183,0.12)", border: "1px solid rgba(59,130,246,0.1)" }}>
+              <div style={{ fontSize: "24px", marginBottom: "6px" }}>{s.icon}</div>
+              <p style={{ fontSize: "clamp(18px, 3vw, 26px)", fontWeight: 800, color: s.color, margin: "0 0 4px" }}>{s.value}</p>
+              <p style={{ color: "#64748b", fontSize: "12px", margin: 0 }}>{s.label}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* FEATURED COLLEGES */}
-      <section style={{ maxWidth: "900px", margin: "56px auto 0", padding: "0 24px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+      <section style={{ maxWidth: "900px", margin: "48px auto 0", padding: "0 16px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
           <div>
-            <p style={{ color: "#3b82f6", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 6px" }}>Handpicked for you</p>
-            <h2 style={{ fontSize: "26px", fontWeight: 800, color: "#0a1628", margin: 0 }}>Featured Colleges</h2>
+            <p style={{ color: "#3b82f6", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 4px" }}>Handpicked for you</p>
+            <h2 style={{ fontSize: "clamp(20px, 3vw, 26px)", fontWeight: 800, color: "#0a1628", margin: 0 }}>Featured Colleges</h2>
           </div>
           <Link href="/colleges" style={{ color: "#3b82f6", fontSize: "14px", fontWeight: 600, textDecoration: "none", background: "rgba(59,130,246,0.08)", padding: "8px 16px", borderRadius: "10px" }}>View all →</Link>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "16px" }}>
           {featured.map((college) => (
             <Link key={college.id} href={`/colleges/${college.id}`} style={{ textDecoration: "none" }}>
-              <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", boxShadow: "0 4px 20px rgba(30,77,183,0.08)", border: "1px solid rgba(59,130,246,0.1)", cursor: "pointer" }}>
+              <div style={{ background: "#fff", borderRadius: "20px", padding: "20px", boxShadow: "0 4px 20px rgba(30,77,183,0.08)", border: "1px solid rgba(59,130,246,0.1)", cursor: "pointer" }}>
                 <div style={{ width: "44px", height: "44px", borderRadius: "12px", background: "linear-gradient(135deg, #dbeafe, #e0e7ff)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px", marginBottom: "14px" }}>🎓</div>
                 <h3 style={{ fontWeight: 800, color: "#1e3a8a", fontSize: "16px", margin: "0 0 6px" }}>{college.name}</h3>
                 <p style={{ color: "#94a3b8", fontSize: "13px", margin: "0 0 14px" }}>📍 {college.location}</p>
-                <div style={{ display: "flex", gap: "8px" }}>
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                   <span style={{ background: "#fefce8", color: "#854d0e", padding: "4px 10px", borderRadius: "8px", fontSize: "12px", fontWeight: 600 }}>⭐ {college.rating}</span>
                   <span style={{ background: "#f0fdf4", color: "#166534", padding: "4px 10px", borderRadius: "8px", fontSize: "12px", fontWeight: 600 }}>{college.placements} avg</span>
                 </div>
@@ -90,24 +84,19 @@ export default async function Home() {
       </section>
 
       {/* TOP RATED */}
-      <section style={{ maxWidth: "900px", margin: "56px auto 0", padding: "0 24px" }}>
-        <div style={{ marginBottom: "24px" }}>
-          <p style={{ color: "#3b82f6", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 6px" }}>Best of the best</p>
-          <h2 style={{ fontSize: "26px", fontWeight: 800, color: "#0a1628", margin: 0 }}>🏆 Top Rated Colleges</h2>
+      <section style={{ maxWidth: "900px", margin: "48px auto 0", padding: "0 16px" }}>
+        <div style={{ marginBottom: "20px" }}>
+          <p style={{ color: "#3b82f6", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 4px" }}>Best of the best</p>
+          <h2 style={{ fontSize: "clamp(20px, 3vw, 26px)", fontWeight: 800, color: "#0a1628", margin: 0 }}>🏆 Top Rated Colleges</h2>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "16px" }}>
           {topRated.map((college, i) => (
             <Link key={college.id} href={`/colleges/${college.id}`} style={{ textDecoration: "none" }}>
-              <div style={{
-                background: i === 0 ? "linear-gradient(135deg, #0d2060, #1e4db7)" : "#fff",
-                borderRadius: "20px", padding: "24px", position: "relative",
-                boxShadow: i === 0 ? "0 8px 32px rgba(30,77,183,0.35)" : "0 4px 20px rgba(30,77,183,0.08)",
-                border: i === 0 ? "none" : "1px solid rgba(59,130,246,0.1)", cursor: "pointer"
-              }}>
-                <div style={{ position: "absolute", top: "16px", right: "16px", width: "32px", height: "32px", borderRadius: "50%", background: i === 0 ? "rgba(255,255,255,0.2)" : i === 1 ? "#e0e7ff" : "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 800, color: i === 0 ? "#fff" : i === 1 ? "#4f46e5" : "#64748b" }}>#{i + 1}</div>
-                <div style={{ fontSize: "28px", marginBottom: "12px" }}>{i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}</div>
+              <div style={{ background: i === 0 ? "linear-gradient(135deg, #0d2060, #1e4db7)" : "#fff", borderRadius: "20px", padding: "20px", position: "relative", boxShadow: i === 0 ? "0 8px 32px rgba(30,77,183,0.35)" : "0 4px 20px rgba(30,77,183,0.08)", border: i === 0 ? "none" : "1px solid rgba(59,130,246,0.1)", cursor: "pointer" }}>
+                <div style={{ position: "absolute", top: "16px", right: "16px", width: "28px", height: "28px", borderRadius: "50%", background: i === 0 ? "rgba(255,255,255,0.2)" : i === 1 ? "#e0e7ff" : "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 800, color: i === 0 ? "#fff" : i === 1 ? "#4f46e5" : "#64748b" }}>#{i + 1}</div>
+                <div style={{ fontSize: "26px", marginBottom: "10px" }}>{i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}</div>
                 <h3 style={{ fontWeight: 800, fontSize: "16px", margin: "0 0 6px", color: i === 0 ? "#fff" : "#0a1628" }}>{college.name}</h3>
-                <p style={{ fontSize: "13px", margin: "0 0 14px", color: i === 0 ? "rgba(255,255,255,0.6)" : "#94a3b8" }}>📍 {college.location}</p>
+                <p style={{ fontSize: "13px", margin: "0 0 12px", color: i === 0 ? "rgba(255,255,255,0.6)" : "#94a3b8" }}>📍 {college.location}</p>
                 <p style={{ fontSize: "14px", fontWeight: 700, margin: "0 0 4px", color: i === 0 ? "#fbbf24" : "#d97706" }}>⭐ {college.rating} / 5.0</p>
                 <p style={{ fontSize: "13px", margin: 0, color: i === 0 ? "rgba(255,255,255,0.6)" : "#64748b" }}>Avg. CTC: {college.placements}</p>
               </div>
@@ -116,14 +105,14 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* CTA BANNER */}
-      <section style={{ maxWidth: "900px", margin: "56px auto 80px", padding: "0 24px" }}>
-        <div style={{ background: "linear-gradient(135deg, #0d2060, #1a3a8f, #1e4db7)", borderRadius: "28px", padding: "48px 40px", textAlign: "center", position: "relative", overflow: "hidden", boxShadow: "0 20px 60px rgba(30,77,183,0.3)" }}>
+      {/* CTA */}
+      <section style={{ maxWidth: "900px", margin: "48px auto 64px", padding: "0 16px" }}>
+        <div style={{ background: "linear-gradient(135deg, #0d2060, #1a3a8f, #1e4db7)", borderRadius: "24px", padding: "40px 24px", textAlign: "center", position: "relative", overflow: "hidden", boxShadow: "0 20px 60px rgba(30,77,183,0.3)" }}>
           <div style={{ position: "absolute", top: "-40px", right: "-40px", width: "200px", height: "200px", borderRadius: "50%", background: "rgba(99,102,241,0.2)", filter: "blur(40px)", pointerEvents: "none" }} />
           <p style={{ color: "#93c5fd", fontSize: "13px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 12px" }}>Ready to start?</p>
-          <h2 style={{ color: "#fff", fontSize: "28px", fontWeight: 800, margin: "0 0 12px", letterSpacing: "-0.02em" }}>Explore All Colleges in India</h2>
-          <p style={{ color: "rgba(255,255,255,0.55)", fontSize: "15px", margin: "0 0 32px" }}>Filter by fees, rating, city and more — find your perfect match.</p>
-          <Link href="/colleges" style={{ display: "inline-block", background: "#fff", color: "#1e4db7", fontWeight: 800, padding: "14px 36px", borderRadius: "14px", textDecoration: "none", fontSize: "15px", boxShadow: "0 4px 20px rgba(0,0,0,0.2)" }}>
+          <h2 style={{ color: "#fff", fontSize: "clamp(20px, 3vw, 28px)", fontWeight: 800, margin: "0 0 12px" }}>Explore All Colleges in India</h2>
+          <p style={{ color: "rgba(255,255,255,0.55)", fontSize: "15px", margin: "0 0 28px" }}>Filter by fees, rating, city and more.</p>
+          <Link href="/colleges" style={{ display: "inline-block", background: "#fff", color: "#1e4db7", fontWeight: 800, padding: "14px 32px", borderRadius: "14px", textDecoration: "none", fontSize: "15px", boxShadow: "0 4px 20px rgba(0,0,0,0.2)" }}>
             Explore All Colleges →
           </Link>
         </div>

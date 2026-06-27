@@ -39,7 +39,7 @@ export default function CollegeDetailPage() {
         <div className="max-w-4xl mx-auto px-4 py-12 animate-pulse">
           <div className="h-8 w-64 bg-gray-200 rounded mb-4" />
           <div className="h-4 w-40 bg-gray-100 rounded mb-8" />
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
             {[1,2,3].map(i => <div key={i} className="h-24 bg-gray-200 rounded-2xl" />)}
           </div>
           <div className="h-40 bg-gray-100 rounded-2xl" />
@@ -96,7 +96,7 @@ export default function CollegeDetailPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
           <div className="bg-white rounded-2xl shadow border p-5 text-center">
             <p className="text-2xl font-bold text-blue-600">₹{(college.fees / 100000).toFixed(1)}L</p>
             <p className="text-gray-500 text-sm mt-1">Fees per year</p>
@@ -132,7 +132,7 @@ export default function CollegeDetailPage() {
         {/* Placements */}
         <div className="bg-white rounded-2xl shadow border p-6 mb-6">
           <h2 className="text-xl font-bold text-gray-800 mb-4">💼 Placements</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-green-50 rounded-xl p-4">
               <p className="text-green-700 font-bold text-xl">{college.placements}</p>
               <p className="text-green-600 text-sm">Average Package</p>

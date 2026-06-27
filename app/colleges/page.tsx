@@ -76,7 +76,7 @@ function CollegesPageInner() {
           <button style={{ background: "linear-gradient(135deg, #3b82f6, #6366f1)", color: "#fff", border: "none", borderRadius: "12px", padding: "12px 24px", fontWeight: 700, fontSize: "14px", cursor: "pointer" }}>Search</button>
         </div>
 
-        <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", boxShadow: "0 4px 20px rgba(30,77,183,0.08)", border: "1px solid rgba(59,130,246,0.1)", marginBottom: "24px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "24px" }}>
+        <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", boxShadow: "0 4px 20px rgba(30,77,183,0.08)", border: "1px solid rgba(59,130,246,0.1)", marginBottom: "24px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px" }}>
           <div>
             <label style={{ display: "block", fontSize: "12px", fontWeight: 700, color: "#64748b", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "10px" }}>📍 Location</label>
             <select value={location} onChange={(e) => { setLocation(e.target.value); setPage(1); }}
@@ -125,7 +125,7 @@ function CollegesPageInner() {
         )}
 
         {loading ? (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "20px" }}>
             {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : colleges.length === 0 ? (
@@ -137,7 +137,7 @@ function CollegesPageInner() {
           </div>
         ) : (
           <>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "20px" }}>
               {colleges.map((college, i) => <CollegeCard key={college.id} college={college} index={i} isSaved={saved.includes(college.id)} />)}
             </div>
             {totalPages > 1 && (
