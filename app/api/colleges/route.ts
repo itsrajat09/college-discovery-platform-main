@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   const minRating = parseFloat(searchParams.get("rating") || "0");
   const maxFees = parseInt(searchParams.get("maxFees") || "9999999");
   const page = parseInt(searchParams.get("page") || "1");
-  const limit = 9;
+  const limit = parseInt(searchParams.get("limit") || "9");
 
   const where = {
     AND: [

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 
 type College = {
@@ -9,6 +10,7 @@ type College = {
   location: string;
   fees: number;
   rating: number;
+  description: string;
   placements: string;
   courses: string[];
   established: number;
@@ -39,45 +41,98 @@ export default function ComparePage() {
   const collegeA = colleges.find((c) => c.id === selectedA);
   const collegeB = colleges.find((c) => c.id === selectedB);
 
+  // FIX: guard undefined values properly — String(undefined) was "undefined"
   function getVal(college: College | undefined, key: string): string {
     if (!college) return "—";
     const val = (college as unknown as Record<string, unknown>)[key];
-    if (key === "fees" && typeof val === "number") return `₹${(val / 100000).toFixed(1)}L`;
-    if (Array.isArray(val)) return val.join(", ");
+    if (val === undefined || val === null || val === "") return "—";
+    if (key === "fees" && typeof val === "number")
+      return `₹${(val / 100000).toFixed(1)}L / yr`;
     return String(val);
   }
 
-  function winner(key: string): "A" | "B" | null {
+  type WinResult = "A" | "B" | "tie" | null;
+
+  function winner(key: string): WinResult {
     if (!collegeA || !collegeB) return null;
     if (key === "rating") {
-      return collegeA.rating > collegeB.rating ? "A" : collegeB.rating > collegeA.rating ? "B" : null;
+      if (collegeA.rating === collegeB.rating) return "tie";
+      return collegeA.rating > collegeB.rating ? "A" : "B";
     }
-    if (key === "fees") return collegeA.fees < collegeB.fees ? "A" : collegeB.fees < collegeA.fees ? "B" : null;
+    if (key === "fees") {
+      if (collegeA.fees === collegeB.fees) return "tie";
+      return collegeA.fees < collegeB.fees ? "A" : "B";
+    }
     if (key === "placements") {
       const a = parseFloat(collegeA.placements);
       const b = parseFloat(collegeB.placements);
-      if (!isNaN(a) && !isNaN(b)) return a > b ? "A" : b > a ? "B" : null;
+      // FIX: was silently returning null without checking both NaN
+      if (!isNaN(a) && !isNaN(b)) {
+        if (a === b) return "tie";
+        return a > b ? "A" : "B";
+      }
     }
     return null;
   }
 
   const rows = [
-    { label: "Location", key: "location", icon: "📍" },
-    { label: "Type", key: "type", icon: "🏛️" },
-    { label: "Established", key: "established", icon: "📅" },
-    { label: "Annual Fees", key: "fees", icon: "💰" },
-    { label: "Rating", key: "rating", icon: "⭐" },
-    { label: "Avg. Placement", key: "placements", icon: "💼" },
-  ];
+    { label: "Location",       key: "location",   icon: "📍", color: "violet" },
+    { label: "Type",           key: "type",        icon: "🏛️", color: "sky"    },
+    { label: "Established",    key: "established", icon: "📅", color: "amber"  },
+    { label: "Annual Fees",    key: "fees",        icon: "💰", color: "rose"   },
+    { label: "Rating",         key: "rating",      icon: "⭐", color: "yellow" },
+    { label: "Avg. Placement", key: "placements",  icon: "💼", color: "green"  },
+  ] as const;
+
+  const scoreA = rows.filter((r) => winner(r.key) === "A").length;
+  const scoreB = rows.filter((r) => winner(r.key) === "B").length;
+  const overallWinner: "A" | "B" | "tie" | null =
+    scoreA > scoreB ? "A" : scoreB > scoreA ? "B" :
+    scoreA > 0 ? "tie" : null;
+
+  // Unified, consistent palette — blue vs indigo throughout
+  const paletteA = {
+    border:   "border-blue-400",
+    label:    "text-blue-600",
+    badge:    "bg-blue-50 text-blue-700",
+    winCell:  "bg-blue-50",
+    winText:  "text-blue-700",
+    winBadge: "bg-blue-100 text-blue-700",
+    course:   "bg-blue-50 text-blue-700",
+    header:   "bg-blue-600",
+    dot:      "bg-blue-500",
+    score:    "bg-blue-500",   // FIX: was violet-500 — inconsistent with palette
+  };
+  const paletteB = {
+    border:   "border-indigo-400",
+    label:    "text-indigo-600",
+    badge:    "bg-indigo-50 text-indigo-700",
+    winCell:  "bg-indigo-50",
+    winText:  "text-indigo-700",
+    winBadge: "bg-indigo-100 text-indigo-700",
+    course:   "bg-indigo-50 text-indigo-700",
+    header:   "bg-indigo-500",
+    dot:      "bg-indigo-500",
+    score:    "bg-indigo-500",  // FIX: was pink-500 — inconsistent with palette
+  };
+
+  const iconBg: Record<string, string> = {
+    violet: "bg-violet-100",
+    sky:    "bg-sky-100",
+    amber:  "bg-amber-100",
+    rose:   "bg-rose-100",
+    yellow: "bg-yellow-100",
+    green:  "bg-green-100",
+  };
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #0f0c29, #302b63, #24243e)" }}>
+      <div className="min-h-screen bg-gray-50">
         <Navbar />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh" }}>
-          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.5)" }}>
-            <div style={{ fontSize: "40px", marginBottom: "16px" }}>⚖️</div>
-            <p style={{ fontSize: "16px" }}>Loading colleges from database...</p>
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-gray-500 font-medium">Loading colleges from database…</p>
           </div>
         </div>
       </div>
@@ -85,106 +140,288 @@ export default function ComparePage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #0f0c29, #302b63, #24243e)", fontFamily: "system-ui, sans-serif" }}>
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      <div style={{ textAlign: "center", padding: "48px 24px 32px" }}>
-        <div style={{
-          display: "inline-block", background: "rgba(255,255,255,0.08)",
-          border: "1px solid rgba(255,255,255,0.15)", borderRadius: "100px",
-          padding: "6px 20px", color: "#a78bfa", fontSize: "13px", fontWeight: 600,
-          letterSpacing: "0.05em", marginBottom: "16px", textTransform: "uppercase"
-        }}>
+      {/* ── Hero ─────────────────────────────────────────────── */}
+      <section className="bg-gradient-to-br from-blue-700 to-blue-500 text-white py-14 px-4 text-center">
+        <span className="inline-block bg-white/20 text-white text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
           Side-by-Side Analysis
-        </div>
-        <h1 style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", fontWeight: 800, color: "#fff", margin: "0 0 12px", letterSpacing: "-0.02em" }}>
+        </span>
+        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
           Compare Colleges
         </h1>
-        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "16px", margin: 0 }}>
-          {colleges.length} colleges loaded from database • pick two to compare
+        <p className="text-blue-100 text-base max-w-lg mx-auto">
+          {colleges.length} colleges loaded — pick any two for an instant breakdown.
         </p>
-      </div>
+      </section>
 
-      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "0 24px 64px" }}>
+      <div className="max-w-5xl mx-auto px-4 py-10">
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "16px", alignItems: "center", marginBottom: "32px" }}>
-          <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(139,92,246,0.4)", borderRadius: "20px", padding: "24px" }}>
-            <div style={{ color: "#a78bfa", fontSize: "11px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "12px" }}>College A</div>
-            <select value={selectedA} onChange={(e) => setSelectedA(e.target.value)}
-              style={{ width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "12px", padding: "12px 16px", color: "#fff", fontSize: "15px", fontWeight: 600, cursor: "pointer", outline: "none", appearance: "none" }}>
-              {colleges.map((c) => <option key={c.id} value={c.id} style={{ background: "#302b63", color: "#fff" }}>{c.name}</option>)}
+        {/* ── Selectors ────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center mb-10">
+
+          {/* College A */}
+          <div className={`bg-white rounded-2xl border-2 ${paletteA.border} shadow-sm p-5`}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className={`w-3 h-3 rounded-full ${paletteA.dot}`} />
+              <p className={`text-xs font-extrabold uppercase tracking-widest ${paletteA.label}`}>
+                College A
+              </p>
+            </div>
+            <select
+              value={selectedA}
+              onChange={(e) => setSelectedA(e.target.value)}
+              className="w-full text-gray-800 font-semibold text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+            >
+              {colleges.map((c) => (
+                // FIX: disable option if it's already selected as B
+                <option key={c.id} value={c.id} disabled={c.id === selectedB}>
+                  {c.name}
+                </option>
+              ))}
             </select>
             {collegeA && (
-              <div style={{ marginTop: "12px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                <span style={{ background: "rgba(139,92,246,0.2)", color: "#c4b5fd", padding: "4px 10px", borderRadius: "100px", fontSize: "12px" }}>⭐ {collegeA.rating}</span>
-                <span style={{ background: "rgba(139,92,246,0.2)", color: "#c4b5fd", padding: "4px 10px", borderRadius: "100px", fontSize: "12px" }}>📍 {collegeA.location}</span>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${paletteA.badge}`}>⭐ {collegeA.rating}</span>
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${paletteA.badge}`}>📍 {collegeA.location}</span>
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${paletteA.badge}`}>{collegeA.type}</span>
               </div>
             )}
           </div>
 
-          <div style={{ width: "52px", height: "52px", borderRadius: "50%", background: "linear-gradient(135deg, #8b5cf6, #ec4899)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: "14px", boxShadow: "0 0 30px rgba(139,92,246,0.5)", flexShrink: 0 }}>VS</div>
+          {/* VS — FIX: was hardcoded bg-blue-600, now neutral to sit between both columns */}
+          <div className="flex justify-center">
+            <div className="w-14 h-14 rounded-full bg-gray-700 flex items-center justify-center shadow-lg">
+              <span className="text-white font-extrabold text-base">VS</span>
+            </div>
+          </div>
 
-          <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(236,72,153,0.4)", borderRadius: "20px", padding: "24px" }}>
-            <div style={{ color: "#f9a8d4", fontSize: "11px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "12px" }}>College B</div>
-            <select value={selectedB} onChange={(e) => setSelectedB(e.target.value)}
-              style={{ width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "12px", padding: "12px 16px", color: "#fff", fontSize: "15px", fontWeight: 600, cursor: "pointer", outline: "none", appearance: "none" }}>
-              {colleges.map((c) => <option key={c.id} value={c.id} style={{ background: "#302b63", color: "#fff" }}>{c.name}</option>)}
+          {/* College B */}
+          <div className={`bg-white rounded-2xl border-2 ${paletteB.border} shadow-sm p-5`}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className={`w-3 h-3 rounded-full ${paletteB.dot}`} />
+              <p className={`text-xs font-extrabold uppercase tracking-widest ${paletteB.label}`}>
+                College B
+              </p>
+            </div>
+            <select
+              value={selectedB}
+              onChange={(e) => setSelectedB(e.target.value)}
+              className="w-full text-gray-800 font-semibold text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer"
+            >
+              {colleges.map((c) => (
+                // FIX: disable option if it's already selected as A
+                <option key={c.id} value={c.id} disabled={c.id === selectedA}>
+                  {c.name}
+                </option>
+              ))}
             </select>
             {collegeB && (
-              <div style={{ marginTop: "12px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                <span style={{ background: "rgba(236,72,153,0.2)", color: "#f9a8d4", padding: "4px 10px", borderRadius: "100px", fontSize: "12px" }}>⭐ {collegeB.rating}</span>
-                <span style={{ background: "rgba(236,72,153,0.2)", color: "#f9a8d4", padding: "4px 10px", borderRadius: "100px", fontSize: "12px" }}>📍 {collegeB.location}</span>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${paletteB.badge}`}>⭐ {collegeB.rating}</span>
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${paletteB.badge}`}>📍 {collegeB.location}</span>
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${paletteB.badge}`}>{collegeB.type}</span>
               </div>
             )}
           </div>
         </div>
 
-        <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "24px", overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", background: "rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
-            <div style={{ padding: "18px 24px", color: "rgba(255,255,255,0.4)", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>Feature</div>
-            <div style={{ padding: "18px 24px", textAlign: "center", color: "#c4b5fd", fontSize: "14px", fontWeight: 700, borderLeft: "1px solid rgba(255,255,255,0.08)" }}>{collegeA?.name || "College A"}</div>
-            <div style={{ padding: "18px 24px", textAlign: "center", color: "#f9a8d4", fontSize: "14px", fontWeight: 700, borderLeft: "1px solid rgba(255,255,255,0.08)" }}>{collegeB?.name || "College B"}</div>
+        {/* ── Score bar — FIX: was completely broken markup ──────── */}
+        {(scoreA > 0 || scoreB > 0) && (
+          <div className="flex items-center gap-3 mb-8 bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+            <span className={`text-sm font-bold ${paletteA.label} w-28 text-right shrink-0 truncate`}>
+              {collegeA?.name?.split(" ").slice(0, 2).join(" ")}
+            </span>
+            <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden flex">
+              <div
+                className={`h-full ${paletteA.score} transition-all duration-500 rounded-l-full`}
+                style={{ width: `${(scoreA / rows.length) * 100}%` }}
+              />
+              <div
+                className={`h-full ${paletteB.score} transition-all duration-500 rounded-r-full ml-auto`}
+                style={{ width: `${(scoreB / rows.length) * 100}%` }}
+              />
+            </div>
+            <span className={`text-sm font-bold ${paletteB.label} w-28 shrink-0 truncate`}>
+              {collegeB?.name?.split(" ").slice(0, 2).join(" ")}
+            </span>
+            <span className="text-xs font-bold text-gray-500 shrink-0 tabular-nums">
+              {scoreA} – {scoreB}
+            </span>
+          </div>
+        )}
+
+        {/* ── Comparison Table ──────────────────────────────────── */}
+        <div className="bg-white rounded-2xl shadow border border-gray-100 overflow-hidden mb-6">
+
+          {/* Header */}
+          <div className="grid grid-cols-3 text-sm font-bold text-white">
+            <div className="p-4 bg-gray-700 text-gray-300 text-xs uppercase tracking-wider">Criteria</div>
+            <div className={`p-4 text-center ${paletteA.header}`}>
+              {collegeA?.name || "College A"}
+            </div>
+            <div className={`p-4 text-center ${paletteB.header}`}>
+              {collegeB?.name || "College B"}
+            </div>
           </div>
 
+          {/* Rows */}
           {rows.map((row, i) => {
             const w = winner(row.key);
             return (
-              <div key={row.key} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", borderBottom: i < rows.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
-                <div style={{ padding: "20px 24px", display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span style={{ fontSize: "18px" }}>{row.icon}</span>
-                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "14px", fontWeight: 500 }}>{row.label}</span>
+              <div
+                key={row.key}
+                className={`grid grid-cols-3 border-t border-gray-100 ${i % 2 === 0 ? "bg-white" : "bg-gray-50/60"}`}
+              >
+                {/* Label */}
+                <div className="p-4 flex items-center gap-3">
+                  <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-base flex-shrink-0 ${iconBg[row.color]}`}>
+                    {row.icon}
+                  </span>
+                  <span className="text-gray-600 text-sm font-medium">{row.label}</span>
                 </div>
-                <div style={{ padding: "20px 24px", borderLeft: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center", background: w === "A" ? "rgba(139,92,246,0.12)" : "transparent" }}>
-                  <span style={{ color: w === "A" ? "#c4b5fd" : "rgba(255,255,255,0.75)", fontWeight: w === "A" ? 700 : 500, fontSize: "15px", display: "flex", alignItems: "center", gap: "6px" }}>
-                    {w === "A" && <span>🏆</span>}{getVal(collegeA, row.key)}
+
+                {/* College A value */}
+                <div className={`p-4 border-l border-gray-100 flex flex-col items-center justify-center gap-1 ${w === "A" ? paletteA.winCell : ""}`}>
+                  {w === "A" && (
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${paletteA.winBadge}`}>
+                      ✓ BETTER
+                    </span>
+                  )}
+                  {w === "tie" && (
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                      = TIE
+                    </span>
+                  )}
+                  <span className={`text-sm font-semibold ${w === "A" ? paletteA.winText : "text-gray-700"}`}>
+                    {getVal(collegeA, row.key)}
                   </span>
                 </div>
-                <div style={{ padding: "20px 24px", borderLeft: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center", background: w === "B" ? "rgba(236,72,153,0.12)" : "transparent" }}>
-                  <span style={{ color: w === "B" ? "#f9a8d4" : "rgba(255,255,255,0.75)", fontWeight: w === "B" ? 700 : 500, fontSize: "15px", display: "flex", alignItems: "center", gap: "6px" }}>
-                    {w === "B" && <span>🏆</span>}{getVal(collegeB, row.key)}
+
+                {/* College B value */}
+                <div className={`p-4 border-l border-gray-100 flex flex-col items-center justify-center gap-1 ${w === "B" ? paletteB.winCell : ""}`}>
+                  {w === "B" && (
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${paletteB.winBadge}`}>
+                      ✓ BETTER
+                    </span>
+                  )}
+                  {w === "tie" && (
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                      = TIE
+                    </span>
+                  )}
+                  <span className={`text-sm font-semibold ${w === "B" ? paletteB.winText : "text-gray-700"}`}>
+                    {getVal(collegeB, row.key)}
                   </span>
                 </div>
               </div>
             );
           })}
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-            <div style={{ padding: "20px 24px", display: "flex", alignItems: "center", gap: "10px" }}>
-              <span style={{ fontSize: "18px" }}>📚</span>
-              <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "14px", fontWeight: 500 }}>Courses</span>
+          {/* Courses — FIX: guard against missing courses array */}
+          <div className="grid grid-cols-3 border-t border-gray-100 bg-white">
+            <div className="p-4 flex items-center gap-3">
+              <span className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-base flex-shrink-0">📚</span>
+              <span className="text-gray-600 text-sm font-medium">Courses</span>
             </div>
-            <div style={{ padding: "20px 24px", borderLeft: "1px solid rgba(255,255,255,0.06)", display: "flex", flexWrap: "wrap", gap: "6px", justifyContent: "center" }}>
-              {collegeA?.courses.map((c) => <span key={c} style={{ background: "rgba(139,92,246,0.2)", color: "#c4b5fd", padding: "3px 10px", borderRadius: "100px", fontSize: "12px", fontWeight: 500 }}>{c}</span>)}
+            <div className="p-4 border-l border-gray-100 flex flex-wrap gap-1.5 justify-center">
+              {(collegeA?.courses ?? []).map((c) => (
+                <span key={c} className={`text-xs font-medium px-2.5 py-1 rounded-full ${paletteA.course}`}>{c}</span>
+              ))}
+              {!collegeA?.courses?.length && <span className="text-sm text-gray-400">—</span>}
             </div>
-            <div style={{ padding: "20px 24px", borderLeft: "1px solid rgba(255,255,255,0.06)", display: "flex", flexWrap: "wrap", gap: "6px", justifyContent: "center" }}>
-              {collegeB?.courses.map((c) => <span key={c} style={{ background: "rgba(236,72,153,0.2)", color: "#f9a8d4", padding: "3px 10px", borderRadius: "100px", fontSize: "12px", fontWeight: 500 }}>{c}</span>)}
+            <div className="p-4 border-l border-gray-100 flex flex-wrap gap-1.5 justify-center">
+              {(collegeB?.courses ?? []).map((c) => (
+                <span key={c} className={`text-xs font-medium px-2.5 py-1 rounded-full ${paletteB.course}`}>{c}</span>
+              ))}
+              {!collegeB?.courses?.length && <span className="text-sm text-gray-400">—</span>}
+            </div>
+          </div>
+
+          {/* About */}
+          <div className="grid grid-cols-3 border-t border-gray-100 bg-gray-50/60">
+            <div className="p-4 flex items-center gap-3">
+              <span className="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center text-base flex-shrink-0">📝</span>
+              <span className="text-gray-600 text-sm font-medium">About</span>
+            </div>
+            <div className="p-4 border-l border-gray-100">
+              <p className="text-xs text-gray-500 leading-relaxed text-center">{collegeA?.description || "—"}</p>
+            </div>
+            <div className="p-4 border-l border-gray-100">
+              <p className="text-xs text-gray-500 leading-relaxed text-center">{collegeB?.description || "—"}</p>
             </div>
           </div>
         </div>
 
-        <div style={{ textAlign: "center", marginTop: "20px", color: "rgba(255,255,255,0.3)", fontSize: "13px" }}>
-          🏆 Trophy = better value in that category
+        {/* ── Verdict ───────────────────────────────────────────── */}
+        {overallWinner && (
+          <div className={`rounded-2xl border p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4 ${
+            overallWinner === "tie"
+              ? "bg-amber-50 border-amber-200"
+              : overallWinner === "A"
+              ? "bg-blue-50 border-blue-200"
+              : "bg-indigo-50 border-indigo-200"
+          }`}>
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold shadow-sm ${
+                overallWinner === "tie"
+                  ? "bg-amber-400 text-white"
+                  : overallWinner === "A"
+                  ? "bg-blue-600 text-white"
+                  : "bg-indigo-500 text-white"
+              }`}>
+                {overallWinner === "tie" ? "=" : "🏆"}
+              </div>
+              <div>
+                <p className={`text-xs font-bold uppercase tracking-widest mb-0.5 ${
+                  overallWinner === "tie" ? "text-amber-600"
+                  : overallWinner === "A" ? paletteA.label : paletteB.label
+                }`}>
+                  Overall Verdict
+                </p>
+                {overallWinner === "tie" ? (
+                  <p className="text-gray-800 font-bold text-lg">It&apos;s a tie — both are evenly matched!</p>
+                ) : (
+                  <p className="text-gray-800 font-bold text-lg">
+                    {overallWinner === "A" ? collegeA?.name : collegeB?.name} wins{" "}
+                    <span className={overallWinner === "A" ? paletteA.label : paletteB.label}>
+                      {overallWinner === "A" ? scoreA : scoreB}/{rows.length}
+                    </span>{" "}
+                    categories
+                  </p>
+                )}
+                <p className="text-gray-500 text-sm mt-0.5">Based on fees, rating &amp; placement performance</p>
+              </div>
+            </div>
+            {overallWinner !== "tie" && (
+              <Link
+                href={`/colleges/${overallWinner === "A" ? collegeA?.id : collegeB?.id}`}
+                className={`text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition shadow-sm whitespace-nowrap ${
+                  overallWinner === "A"
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-indigo-500 hover:bg-indigo-600"
+                }`}
+              >
+                View College →
+              </Link>
+            )}
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-gray-400">
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-blue-500 mr-1" />
+            Blue = College A wins &nbsp;·&nbsp;
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-indigo-500 mr-1" />
+            Indigo = College B wins
+          </p>
+          <Link href="/colleges" className="text-blue-600 text-sm font-semibold hover:underline">
+            Browse all colleges →
+          </Link>
         </div>
+
       </div>
     </div>
   );
