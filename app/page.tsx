@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import HomeSearch from "@/components/HomeSearch";
 import { prisma } from "@/lib/prisma";
 
 export default async function Home() {
@@ -36,13 +37,7 @@ export default async function Home() {
           Discover, compare, and save top colleges across India — all in one place.
         </p>
 
-        <div style={{ maxWidth: "560px", margin: "0 auto 32px", display: "flex", gap: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "16px", padding: "8px 8px 8px 20px", backdropFilter: "blur(10px)" }}>
-          <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "18px", display: "flex", alignItems: "center" }}>🔍</span>
-          <input type="text" placeholder="Search colleges by name or city..." readOnly style={{ flex: 1, background: "transparent", border: "none", outline: "none", color: "#fff", fontSize: "15px" }} />
-          <Link href="/colleges" style={{ background: "linear-gradient(135deg, #3b82f6, #6366f1)", color: "#fff", fontWeight: 700, padding: "12px 24px", borderRadius: "10px", textDecoration: "none", fontSize: "14px", whiteSpace: "nowrap", boxShadow: "0 4px 20px rgba(99,102,241,0.4)" }}>
-            Search →
-          </Link>
-        </div>
+        <HomeSearch />
 
         <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
           {["✅ 25+ Colleges", "✅ Filter by Fees & Rating", "✅ Compare Side by Side"].map((f) => (

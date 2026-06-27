@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import CollegeCard from "@/components/CollegeCard";
 import SkeletonCard from "@/components/SkeletonCard";
@@ -9,9 +10,10 @@ import type { College } from "@/lib/colleges";
 
 const LOCATIONS = ["All", "Delhi", "Mumbai", "Chennai", "Bangalore", "Pune", "Kolkata", "Pilani, Rajasthan", "Vellore, Tamil Nadu"];
 
-export default function CollegesPage() {
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+function CollegesPageInner() {
+  const searchParams = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get("search") || "");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchParams.get("search") || "");
   const [location, setLocation] = useState("");
   const [maxFees, setMaxFees] = useState(9999999);
   const [minRating, setMinRating] = useState(0);
@@ -151,5 +153,13 @@ export default function CollegesPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CollegesPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><p className="text-gray-500">Loading...</p></div>}>
+      <CollegesPageInner />
+    </Suspense>
   );
 }
